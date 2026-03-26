@@ -1,0 +1,78 @@
+---
+# Install first control plane node
+- name: Install K3s on first control plane node
+  hosts: control
+  become: yes
+  tasks:
+    - name: Install K3s (v1.32.2+k3s1) on first control plane
+      shell: |
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.32.2+k3s1" sh -s - server --cluster-init
+      register: k3s_install_output
+      failed_when: "'error' in k3s_install_output.stderr | default('')"
+      changed_when: "'already installed' not in k3s_install_output.stdout | default('')"
+    
+    - name: Wait for K3s API to be active on first control plane
+      wait_for:
+        port: 6443
+        delay: 10
+        timeout: 300
+        state: started
+    
+    - name: Retrieve K3s token from first control plane
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: k3s_token_b64
+    
+    - name: Set token fact
+      set_fact:
+        k3s_token: "{{ k3s_token_b64['content'] | b64decode | trim }}"
+        k3s_api_endpoint: "https://{{ ansible_default_ipv4.address }}:6443"
+
+
+# Install worker nodes
+- name: Install K3s on worker nodes
+  hosts: workers
+  become: yes
+  vars:
+    k3s_token: "{{ hostvars['raspberrypi4']['k3s_token'] }}"
+    k3s_api_endpoint: "{{ hostvars['raspberrypi4']['k3s_api_endpoint'] }}"
+  tasks:
+    - name: Install K3s on worker nodes
+      shell: |
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.32.2+k3s1" K3S_TOKEN="{{ k3s_token }}" K3S_URL="{{ k3s_api_endpoint }}" sh -s - agent
+      register: k3s_worker_install_output
+      failed_when: "'error' in k3s_worker_install_output.stderr | default('')"
+      changed_when: "'already installed' not in k3s_worker_install_output.stdout | default('')"
+
+    - name: Wait for K3s service to be active on worker nodes
+      systemd:
+        name: k3s-agent
+        state: started
+        enabled: yes
+      register: k3s_agent_status
+      until: k3s_agent_status.status.ActiveState == "active"
+      retries: 10
+      delay: 10
+
+# Set up kubeconfig
+- name: Set up kubeconfig
+  hosts: raspberrypi4
+  become: yes
+  vars:
+    user_home: "/home/{{ ansible_user }}"
+  tasks:
+    - name: Create .kube directory if it doesn't exist
+      file:
+        path: "{{ user_home }}/.kube"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: 0700
+      
+    - name: Copy k3s.yaml and modify server URL
+      shell: |
+        sed "s/127.0.0.1/{{ ansible_default_ipv4.address }}/" /etc/rancher/k3s/k3s.yaml > {{ user_home }}/.kube/config
+        chown {{ ansible_user }}:{{ ansible_user }} {{ user_home }}/.kube/config
+        chmod 600 {{ user_home }}/.kube/config
+      args:
+        creates: "{{ user_home }}/.kube/config"

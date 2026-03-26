@@ -16,3 +16,6 @@ raspbian
 redhat
 rocky
 [workers]
+raspberrypi5
+rockyserver 
+redhatserver 
