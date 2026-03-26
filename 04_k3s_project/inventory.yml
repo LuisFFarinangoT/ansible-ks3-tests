@@ -16,6 +16,7 @@ all:
     ansible_port: 22
     ansible_user: lfftk3s
     k3s_version: v1.31.12+k3s1
+    ansible_sudo_pass: lfftk3s
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
     # The token should be a random string of reasonable length. You can generate
     # one with the following commands:
@@ -23,8 +24,8 @@ all:
     # - pwgen -s 64 1
     # You can use ansible-vault to encrypt this value / keep it secret.
     # Or you can omit it if not using Vagrant and let the first server automatically generate one.
-    token: "changeme!"
-    api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
+    #token: "changeme!"
+    #api_endpoint: "{{ hostvars[groups['server'][0]]['ansible_host'] | default(groups['server'][0]) }}"
 
     # Optional vars
     # extra_server_args: ""
@@ -32,10 +33,10 @@ all:
     # extra_install_envs: { 'INSTALL_K3S_SKIP_SELINUX_RPM': 'true' }
     cluster_context: k3s-ansible-lfft
     # api_port: 6443
-    # k3s_server_location: /var/lib/rancher/k3s
-    # systemd_dir: /etc/systemd/system
+    k3s_server_location: /var/lib/rancher/k3s
+    systemd_dir: /etc/systemd/system
     # extra_service_envs: [ 'ENV_VAR1=VALUE1', 'ENV_VAR2=VALUE2' ]
-    # user_kubectl: true, by default kubectl is symlinked and configured for use by ansible_user. Set to false to only kubectl via root user.
+    user_kubectl: true #by default kubectl is symlinked and configured for use by ansible_user. Set to false to only kubectl via root user.
 
     # Manifests or Airgap should be either full paths or relative to the playbook directory.
     # List of locally available manifests to apply to the cluster, useful for PVCs or Traefik modifications.
