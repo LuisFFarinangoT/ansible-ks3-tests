@@ -1,0 +1,3 @@
+k3s_version_ult: v1.35.2+k3s1
+user_all_vm: 
+  name: "lfftk3s"
