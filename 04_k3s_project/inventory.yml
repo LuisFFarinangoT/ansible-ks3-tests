@@ -14,11 +14,12 @@ all:
           ansible_host: 192.168.100.61
   vars:
     vars_files:
-      - secrets.yml
+      - vars/secrets.yml
+      - vars/all_vars.yml
     ansible_port: 22
     ansible_user: lfftk3s
-    k3s_version: v1.31.12+k3s1
-    ansible_sudo_pass: "{{ k3s-passwd }}"
+    ansible_ssh_private_key_file: /home/lfft/.ssh/id_ed25519
+    ansible_sudo_pass: "{{ vault_root_password  }}"
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
     # The token should be a random string of reasonable length. You can generate
     # one with the following commands:

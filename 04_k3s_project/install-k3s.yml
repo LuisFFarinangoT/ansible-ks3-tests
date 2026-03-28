@@ -4,9 +4,9 @@
   hosts: control
   become: yes
   tasks:
-    - name: Install K3s (v1.32.2+k3s1) on first control plane
+    - name: Install K3s {{ k3s_version_ult }} on first control plane
       shell: |
-        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="v1.32.2+k3s1" sh -s - server --cluster-init
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="{{ k3s_version_ult }}" sh -s - server --cluster-init
       register: k3s_install_output
       failed_when: "'error' in k3s_install_output.stderr | default('')"
       changed_when: "'already installed' not in k3s_install_output.stdout | default('')"
