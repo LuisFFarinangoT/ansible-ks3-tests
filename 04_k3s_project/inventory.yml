@@ -17,7 +17,7 @@ all:
       - secrets.yml
     ansible_port: 22
     ansible_user: lfftk3s
-    k3s_version: v1.31.12+k3s1
+    k3s_version: v1.35.2+k3s1
     ansible_sudo_pass: "{{ k3s-passwd }}"
     ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
     # The token should be a random string of reasonable length. You can generate
