@@ -1,7 +1,23 @@
----
-- name : Create a k8s namespace
-  kubernetes.core.k8s:
-    name: argocd
-    api_version: v1
-    kind: Namespace
-    state: present
+- name : Deploy ArgoCD
+  hosts: server
+  tasks:
+    - name: install pre-requisites
+      pip:
+        name:
+        - openshift
+        - pyyaml
+        - kubernetes
+        extra_args: "--break-system-packages"
+
+    - name: Ensure kubernetes module is installed
+      ansible.builtin.pip:
+        name: kubernetes
+        state : present 
+        extra_args: "--break-system-packages"
+
+    - name : Create a k8s namespace
+      kubernetes.core.k8s:
+        name: argocd
+        api_version: v1
+        kind: Namespace
+        state: present

@@ -1,0 +1,10 @@
+- name: Bootstrap hosts with Python
+  hosts: server
+  tasks:
+    - name: Install Python 3 and pip (for Debian/Ubuntu-based systems)
+      raw: sudo apt update && sudo apt install -y python3 python3-pip python3-venv
+      register: output
+      changed_when: output.stdout | length > 0
+      # Only runs if Python is not found, to make it idempotent
+      args:
+        creates: /usr/bin/python3
