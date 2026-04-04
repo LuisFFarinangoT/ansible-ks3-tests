@@ -1,23 +1,37 @@
 - name : Deploy ArgoCD
   hosts: server
+  vars: 
+    ansible_python_interpreter: /opt/k3s_ansible/venv/bin/python
+    pyt_env: /opt/kubernetes_venv
+    app_name: k3s_ansible
+    app_dir: /opt/k3s_ansible
+    venv_dir: /opt/k3s_ansible/venv
+    python_version: python3.14
+    ansible_env:
+      KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   tasks:
-    - name: install pre-requisites
-      pip:
-        name:
-        - openshift
-        - pyyaml
-        - kubernetes
-        extra_args: "--break-system-packages"
-
-    - name: Ensure kubernetes module is installed
-      ansible.builtin.pip:
-        name: kubernetes
-        state : present 
-        extra_args: "--break-system-packages"
-
-    - name : Create a k8s namespace
+    - name : Create a k8s namespace for argocd
       kubernetes.core.k8s:
         name: argocd
         api_version: v1
         kind: Namespace
         state: present
+
+    - name: Deploy argocd 
+      kubernetes.core.k8s:
+        src: https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+        state: present
+        namespace: argocd
+        wait: true
+        
+    - name: Change argocd-server service to LoadBalancer
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Service
+        name: argocd-server
+        namespace: argocd
+        state: present
+        definition:
+          spec:
+            type: LoadBalancer
+

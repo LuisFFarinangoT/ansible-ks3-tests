@@ -1,10 +1,54 @@
 - name: Bootstrap hosts with Python
   hosts: server
+  become: true
+  vars:
+    pyt_env: /opt/kubernetes_venv
+    app_name: k3s_ansible
+    app_dir: /opt/k3s_ansible
+    venv_dir: /opt/k3s_ansible/venv
+    python_version: python3.14
+    
+
+  vars_files:
+      - group_vars/all/secrets.yml
+      - group_vars/all/vars_used.yml
+
   tasks:
-    - name: Install Python 3 and pip (for Debian/Ubuntu-based systems)
-      raw: sudo apt update && sudo apt install -y python3 python3-pip python3-venv
-      register: output
-      changed_when: output.stdout | length > 0
-      # Only runs if Python is not found, to make it idempotent
-      args:
-        creates: /usr/bin/python3
+    - name: Install Python and venv package
+      ansible.builtin.apt:
+        name:
+          - "{{ python_version }}"
+          - "{{ python_version }}-venv"
+          - "{{ python_version }}-dev"
+        state: present
+
+    - name: Create application directory
+      ansible.builtin.file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: "{{ user_all_vm.name }}"
+        group: "{{ user_all_vm.name }}"
+        mode: '0755'
+
+    -  name: Create virtual environment
+       ansible.builtin.pip:
+        virtualenv: "{{ venv_dir }}"
+        virtualenv_command: "{{ python_version }} -m venv"
+        name: pip
+        state: latest
+
+    - name: Install specific packages
+      ansible.builtin.pip:
+        virtualenv: "{{ venv_dir }}"
+        name:
+          - kubernetes
+          - openshift
+          - pyyaml
+        
+    - name: Ensure kubernetes module is installed
+      ansible.builtin.pip:
+        virtualenv: "{{ pyt_env }}"
+        name: kubernetes
+        state : present
+        
+
