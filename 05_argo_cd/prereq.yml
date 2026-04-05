@@ -1,4 +1,4 @@
-- name: Bootstrap hosts with Python
+- name: Install prerequisites kubernetes.core.k8s on master node 
   hosts: server
   become: true
   vars:

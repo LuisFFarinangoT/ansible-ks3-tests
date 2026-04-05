@@ -1,4 +1,4 @@
-- name : Deploy ArgoCD
+- name : Deploy ArgoCD on k3s cluster 
   hosts: server
   vars: 
     ansible_python_interpreter: /opt/k3s_ansible/venv/bin/python
