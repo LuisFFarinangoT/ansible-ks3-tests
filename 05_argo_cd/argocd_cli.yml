@@ -1,0 +1,19 @@
+- name: Download ArgoCD CLI
+  hosts: server
+  become: true
+  vars: 
+    ansible_python_interpreter: /opt/k3s_ansible/venv/bin/python
+    pyt_env: /opt/kubernetes_venv
+    app_name: k3s_ansible
+    app_dir: /opt/k3s_ansible
+    venv_dir: /opt/k3s_ansible/venv
+    python_version: python3.14
+    ansible_env:
+      KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  tasks: 
+    - name: Download ArgoCD CLI binary
+      get_url:
+        url: https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-arm64
+        dest: /usr/local/bin/argocd
+        mode: '0755'
+        force: yes
