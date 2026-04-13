@@ -1,0 +1,25 @@
+---
+k3s_cluster:
+  children:
+    server:
+      hosts:
+        192.168.100.58:
+    agent:
+      hosts:
+        192.168.100.60:
+        192.168.100.61:
+        192.168.100.59:
+
+  # Required Vars
+  
+  vars_files:
+      - group_vars/all/secrets.yml
+      - group_vars/all/vars_used.yml
+  vars:
+    ansible_port: 22
+    ansible_user: lfftk3s
+    ansible_sudo_pass: "{{ my_clusters_root_password }}"
+    ansible_ssh_private_key_file: /home/lfft/.ssh/id_ed25519
+
+
+    
