@@ -1,0 +1,22 @@
+Name:                     frontend-proxy
+Namespace:                demo
+Labels:                   app.kubernetes.io/component=frontend-proxy
+                          app.kubernetes.io/managed-by=Helm
+                          app.kubernetes.io/name=frontend-proxy
+                          app.kubernetes.io/part-of=opentelemetry-demo
+                          app.kubernetes.io/version=2.2.0
+                          helm.sh/chart=opentelemetry-demo-0.40.7
+                          opentelemetry.io/name=frontend-proxy
+Annotations:              argocd.argoproj.io/tracking-id: test-app:/Service:demo/frontend-proxy
+Selector:                 opentelemetry.io/name=frontend-proxy
+Type:                     ClusterIP
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.43.223.40
+IPs:                      10.43.223.40
+Port:                     tcp-service  8080/TCP
+TargetPort:               8080/TCP
+Endpoints:                10.42.1.73:8080
+Session Affinity:         None
+Internal Traffic Policy:  Cluster
+Events:                   <none>
