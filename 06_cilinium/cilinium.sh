@@ -26,25 +26,28 @@ cilium install \
   --set k8sServicePort=${API_SERVER_PORT} \
   --set ipam.operator.clusterPoolIPv4PodCIDRList=$POD_CIDR \
   --set kubeProxyReplacement=true \
+  --set bgpControlPlane.enabled=true \
+  --set hubble.metrics.enabled="{dns,drop,tcp,flow,port-distribution,icmp,http}" \
   --set hubble.relay.enabled=true \
+  --set routingMode=native \
+  --set autoDirectNodeRoutes=true \
   --set hubble.ui.enabled=true
-  --helm-set=operator.replicas=1
+  
 
 
-helm install cilium cilium/cilium --version 1.14.2 \
---namespace kube-system \
---set bgpControlPlane.enabled=true \
---set tunnel=disabled \
---set ipam.operator.clusterPoolIPv4PodCIDRList=10.42.0.0/16 \
---set kubeProxyReplacement=true \
---set k8sServiceHost=192.168.100.58git \
---set k8sServicePort=6443 \
---set routingMode=native \
---set autoDirectNodeRoutes=true \
---set ipv4NativeRoutingCIDR=10.42.0.0/16 \
---set loadBalancer.mode=dsr \
---set ipv4.enabled=true \
---set prometheus.enabled=true \
---set operator.prometheus.enabled=true \
---set hubble.enabled=true \
---set hubble.metrics.enabled="{dns,drop,tcp,flow,port-distribution,icmp,http}"
+
+API_SERVER_IP=`hostname -I`
+API_SERVER_PORT=6443
+CLUSTER_ID=1
+CLUSTER_NAME=`hostname`
+POD_CIDR="10.42.0.0/16"
+cilium install \
+  --set k8sServiceHost=${API_SERVER_IP} \
+  --set k8sServicePort=${API_SERVER_PORT} \
+  --set cluster.id=${CLUSTER_ID} \
+  --set cluster.name=${CLUSTER_NAME} \
+  --set ipam.operator.clusterPoolIPv4PodCIDRList=$POD_CIDR \
+  --set bgpControlPlane.enabled=true \
+  --set routingMode=native \
+  --set autoDirectNodeRoutes=true \
+  --set kubeProxyReplacement=true
