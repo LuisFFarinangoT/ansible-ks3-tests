@@ -1,3 +1,4 @@
 k3s_version_ult: v1.35.2+k3s1
+venv_path_vars: /opt/kubernetes_venv
 user_all_vm: 
   name: "lfftk3s"
