@@ -21,7 +21,7 @@ k3s_cluster:
     ansible_sudo_pass: lfftk3s
     ansible_become: yes
     ansible_ssh_private_key_file: /home/lfft/.ssh/id_ed25519
-    k3s_version: v1.35.3+k3s1
+    k3s_version: v1.36.0+k3s1
     # - openssl rand -base64 64
     # - pwgen -s 64 1
     # You can use ansible-vault to encrypt this value / keep it secret.
