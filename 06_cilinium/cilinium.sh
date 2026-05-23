@@ -51,3 +51,23 @@ cilium install \
   --set routingMode=native \
   --set autoDirectNodeRoutes=true \
   --set kubeProxyReplacement=true
+
+
+
+## update cilium helm 
+helm upgrade cilium cilium/cilium --version 1.19.2 \
+   --namespace kube-system \
+   --reuse-values \
+   --set externalTrafficPolicy=Cluster \
+   --set internalTrafficPolicy=Cluster \
+   --set kubeProxyReplacement=true \
+   --set k8sServiceHost=192.168.1.58 \
+   --set k8sServicePort=6443 \
+   --set envoy.enabled=true \
+   --set l2announcements.enabled=true \
+   --set l2announcements.leaseDuration=3s \
+   --set l2announcements.leaseRenewDeadline=1s \
+   --set l2announcements.leaseRetryPeriod=200ms \
+   --set lbipam.enabled=true \
+   --set policyEnforcementMode=never \
+   ## --set policyEnforcementMode=default
