@@ -1,0 +1,10 @@
+---
+- hosts: all
+  vars_files:
+      - group_vars/all/secrets.yml
+      - group_vars/all/vars_used.yml
+  tasks:
+    - name: Use encrypted variable
+      debug:
+        msg: "The secret value is {{ user_all_vm.name }}"
+        
